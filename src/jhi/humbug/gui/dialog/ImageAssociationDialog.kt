@@ -38,7 +38,7 @@ import java.io.File
 
  * @author Sebastian Raubach
  */
-class ImageAssociationDialog(parentShell: Shell, previousSelection: File) : I18nDialog(parentShell)
+class ImageAssociationDialog(parentShell: Shell, previousSelection: File?) : I18nDialog(parentShell)
 {
     var file: File? = null
         private set
