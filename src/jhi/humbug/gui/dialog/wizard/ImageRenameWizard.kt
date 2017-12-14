@@ -31,6 +31,7 @@ import java.lang.reflect.InvocationTargetException
 class ImageRenameWizard : Wizard()
 {
     private lateinit var input: ImageRenameFileWizardPage
+    private lateinit var options: ImageRenameOptionsWizardPage
 
     private val sourceFolder: File?
         get() = input.sourceFolder
@@ -51,7 +52,7 @@ class ImageRenameWizard : Wizard()
     override fun addPages()
     {
         input = ImageRenameFileWizardPage()
-        val options = ImageRenameOptionsWizardPage()
+        options = ImageRenameOptionsWizardPage()
 
         addPage(input)
         addPage(options)
@@ -64,7 +65,7 @@ class ImageRenameWizard : Wizard()
         /* Start the progress dialog */
         try
         {
-            container.run(true, true, BarcodeImageRenameThread(sourceFolder, targetFolder))
+            container.run(true, true, BarcodeImageRenameThread(sourceFolder, targetFolder, options.getBarcodeRestriction(), options.getTryHard()))
         }
         catch (ex: InvocationTargetException)
         {

@@ -24,11 +24,12 @@ import com.google.zxing.common.*;
 import com.google.zxing.multi.*;
 
 import org.eclipse.core.runtime.*;
-import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.operation.*;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.program.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.dialogs.*;
 
 import java.awt.image.*;
 import java.io.*;
@@ -40,6 +41,7 @@ import java.util.stream.*;
 
 import javax.imageio.*;
 
+import jhi.humbug.gui.dialog.*;
 import jhi.humbug.gui.i18n.*;
 import jhi.humbug.util.*;
 
@@ -53,10 +55,14 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 	private DuplicateBarcodeOption duplicateBarcodeOption;
 	private MissingBarcodeOption   missingBarcodeOption;
 	private List<File> noBarcodeFound = new ArrayList<>();
+	private BarcodeFormat restriction;
+	private boolean       tryHard;
 
-	public BarcodeImageRenameThread(File source, File target)
+	public BarcodeImageRenameThread(File source, File target, BarcodeFormat restriction, boolean tryHard)
 	{
 		this.source = source;
+		this.restriction = restriction;
+		this.tryHard = tryHard;
 
 		if (target == null)
 		{
@@ -108,7 +114,9 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 				GenericMultipleBarcodeReader greader = new GenericMultipleBarcodeReader(reader);
 
 				Hashtable<DecodeHintType, Object> decodeHints = new Hashtable<>();
-				decodeHints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+
+				if (tryHard)
+					decodeHints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
 
 				try
 				{
@@ -119,7 +127,16 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 						BinaryBitmap bmp = new BinaryBitmap(new HybridBinarizer(ls));
 						Result[] res = greader.decodeMultiple(bmp, decodeHints);
 
-						switch (res.length)
+						List<Result> resList = Arrays.stream(res)
+													 .filter(r -> {
+														 if (restriction != null)
+															 return r.getBarcodeFormat() == restriction;
+														 else
+															 return true;
+													 })
+													 .collect(Collectors.toList());
+
+						switch (resList.size())
 						{
 							case 0:
 								noBarcodeFound.add(file);
@@ -141,13 +158,13 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 								switch (duplicateBarcodeOption)
 								{
 									case PICK_FIRST:
-										filename = res[0].getText();
+										filename = resList.get(0).getText();
 										break;
 									case CONCATENATE:
 									default:
-										filename = Arrays.stream(res)
-														 .map(Result::getText)
-														 .collect(Collectors.joining("-"));
+										filename = resList.stream()
+														  .map(Result::getText)
+														  .collect(Collectors.joining("-"));
 										break;
 								}
 
@@ -187,28 +204,49 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 			}
 		}
 
+		// If images have been skipped (no barcode was found), report them to the user
 		if (noBarcodeFound.size() > 0)
 		{
 			Display.getDefault().asyncExec(() ->
 			{
 				ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell())
 				{
+					// Listen to double click events and then open the file
 					@Override
-					protected void createButtonsForButtonBar(Composite parent)
+					protected void onItemDoubleClicked(Object item)
 					{
-						createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+						Program.launch(((File) item).getAbsolutePath());
 					}
 				};
 				dialog.setTitle(RB.getString(RB.DIALOG_RENAME_IMAGE_NO_BARCODE_TITLE));
 				dialog.setMessage(RB.getString(RB.DIALOG_RENAME_IMAGE_NO_BARCODE_MESSAGE));
-				dialog.setInput(noBarcodeFound.stream().map(File::getName).collect(Collectors.toList()));
+				dialog.setInput(noBarcodeFound);
 				dialog.setContentProvider(new ArrayContentProvider());
 				dialog.setLabelProvider(new LabelProvider()
 				{
 					@Override
 					public String getText(Object element)
 					{
-						return element.toString();
+						return ((File) element).getName();
+					}
+				});
+				// Listen to Ctrl+C events and then copy the file paths to the clipboard
+				dialog.addListener(SWT.KeyUp, event -> {
+					if ((((event.stateMask & SWT.CTRL) == SWT.CTRL) || ((event.stateMask & SWT.COMMAND) == SWT.COMMAND))
+							&& event.keyCode == 'c')
+					{
+						IStructuredSelection selection = dialog.getSelection();
+
+						if (selection.size() > 0)
+						{
+							List<?> list = selection.toList();
+							String result = list.stream()
+												.map(o -> ((File) o).getAbsolutePath())
+												.collect(Collectors.joining("\n"));
+
+							Clipboard cb = new Clipboard(Display.getDefault());
+							cb.setContents(new Object[]{result}, new Transfer[]{TextTransfer.getInstance()});
+						}
 					}
 				});
 				dialog.open();
@@ -218,14 +256,14 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 
 	public enum DuplicateBarcodeOption
 	{
-		CONCATENATE(RB.getString(RB.SETTING_BARCODE_RENAME_DUPLICATE_CONCATENATE)),
-		PICK_FIRST(RB.getString(RB.SETTING_BARCODE_RENAME_DUPLICATE_PICK_FIRST));
+		CONCATENATE(RB.SETTING_BARCODE_RENAME_DUPLICATE_CONCATENATE),
+		PICK_FIRST(RB.SETTING_BARCODE_RENAME_DUPLICATE_PICK_FIRST);
 
 		private String text;
 
 		DuplicateBarcodeOption(String text)
 		{
-			this.text = text;
+			this.text = RB.getString(text);
 		}
 
 		public String getText()
@@ -236,14 +274,14 @@ public class BarcodeImageRenameThread implements IRunnableWithProgress
 
 	public enum MissingBarcodeOption
 	{
-		SKIP(RB.getString(RB.SETTING_BARCODE_RENAME_MISSING_SKIP)),
-		COPY(RB.getString(RB.SETTING_BARCODE_RENAME_MISSING_COPY));
+		SKIP(RB.SETTING_BARCODE_RENAME_MISSING_SKIP),
+		COPY(RB.SETTING_BARCODE_RENAME_MISSING_COPY);
 
 		private String text;
 
 		MissingBarcodeOption(String text)
 		{
-			this.text = text;
+			this.text = RB.getString(text);
 		}
 
 		public String getText()

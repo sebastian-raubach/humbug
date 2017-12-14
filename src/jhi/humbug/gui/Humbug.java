@@ -342,7 +342,16 @@ public class Humbug extends RestartableApplication
 		item.addListener(SWT.Selection, e ->
 		{
 			ImageRenameWizard wizard = new ImageRenameWizard();
-			WizardDialog dialog = new WizardDialog(shell, wizard);
+			WizardDialog dialog = new WizardDialog(shell, wizard)
+			{
+				@Override
+				protected void createButtonsForButtonBar(Composite parent)
+				{
+					super.createButtonsForButtonBar(parent);
+					Button finishButton = getButton(IDialogConstants.FINISH_ID);
+					finishButton.setText(RB.getString(RB.DIALOG_BUTTON_RUN));
+				}
+			};
 			dialog.open();
 		});
 

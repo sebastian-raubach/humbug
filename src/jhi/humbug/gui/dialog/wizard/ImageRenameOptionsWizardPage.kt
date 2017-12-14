@@ -17,12 +17,15 @@
 
 package jhi.humbug.gui.dialog.wizard
 
+import com.google.zxing.BarcodeFormat
 import jhi.humbug.gui.i18n.RB
+import jhi.humbug.gui.viewer.BarcodeFormatComboViewer
 import jhi.humbug.gui.viewer.DuplicateBarcodeOptionComboViewer
 import jhi.humbug.gui.viewer.MissingBarcodeOptionComboViewer
 import jhi.swtcommons.gui.layout.GridLayoutUtils
 import org.eclipse.jface.wizard.WizardPage
 import org.eclipse.swt.SWT
+import org.eclipse.swt.widgets.Button
 import org.eclipse.swt.widgets.Composite
 import org.eclipse.swt.widgets.Label
 
@@ -32,6 +35,8 @@ import org.eclipse.swt.widgets.Label
 class ImageRenameOptionsWizardPage : WizardPage("Image Rename Wizard Options")
 {
     private lateinit var content: Composite
+    private lateinit var formatViewer: BarcodeFormatComboViewer
+    private lateinit var tryHard: Button
 
     init
     {
@@ -47,9 +52,24 @@ class ImageRenameOptionsWizardPage : WizardPage("Image Rename Wizard Options")
         MissingBarcodeOptionComboViewer(content, SWT.READ_ONLY)
         Label(content, SWT.NONE).text = RB.getString(RB.SETTING_BARCODE_RENAME_DUPLICATE_TITLE)
         DuplicateBarcodeOptionComboViewer(content, SWT.READ_ONLY)
+        Label(content, SWT.NONE).text = RB.getString(RB.SETTING_BARCODE_RENAME_RESTRICT_TYPE_TITLE)
+        formatViewer = BarcodeFormatComboViewer(content, SWT.READ_ONLY, true, true)
+        Label(content, SWT.NONE).text = RB.getString(RB.SETTING_BARCODE_RENAME_TRY_HARD_TITLE)
+        tryHard = Button(content, SWT.CHECK)
+        tryHard.text = RB.getString(RB.SETTING_BARCODE_RENAME_TRY_HARD_TEXT)
 
         GridLayoutUtils.useValues(1, false).applyTo(content)
 
         control = content
+    }
+
+    fun getBarcodeRestriction(): BarcodeFormat?
+    {
+        return formatViewer.getBarcodeRestriction()
+    }
+
+    fun getTryHard(): Boolean
+    {
+        return tryHard.selection
     }
 }

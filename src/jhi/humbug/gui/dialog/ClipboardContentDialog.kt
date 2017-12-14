@@ -49,7 +49,6 @@ class ClipboardContentDialog(parentShell: Shell) : I18nDialog(parentShell)
 
     init
     {
-
         setBlockOnOpen(true)
     }
 

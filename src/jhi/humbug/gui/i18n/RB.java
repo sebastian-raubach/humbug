@@ -62,6 +62,8 @@ public class RB extends jhi.swtcommons.gui.i18n.RB
 	public static final String BUTTON_CLEAR = "button.clear";
 	public static final String BUTTON_ADD   = "button.add";
 
+	public static final String DIALOG_BUTTON_RUN = "dialog.button.run";
+
 	public static final String MENU_MAIN_FILE                   = "menu.main.file";
 	public static final String MENU_MAIN_FILE_IMPORT            = "menu.main.file.import";
 	public static final String MENU_MAIN_FILE_IMPORT_TXT_FILE   = "menu.main.file.import.txt.file";
@@ -140,6 +142,12 @@ public class RB extends jhi.swtcommons.gui.i18n.RB
 	public static final String SETTING_BARCODE_RENAME_DUPLICATE_PICK_FIRST = "setting.barcode.rename.duplicate.pick.first";
 	public static final String SETTING_BARCODE_RENAME_MISSING_TITLE        = "setting.barcode.rename.missing.title";
 	public static final String SETTING_BARCODE_RENAME_MISSING_SKIP         = "setting.barcode.rename.missing.skip";
+
+	public static final String SETTING_BARCODE_RENAME_RESTRICT_TYPE_TITLE      = "setting.barcode.rename.restrict.type.title";
+	public static final String SETTING_BARCODE_RENAME_RESTRICT_TYPE_ACCEPT_ALL = "setting.barcode.rename.restrict.type.accept.all";
+
+	public static final String SETTING_BARCODE_RENAME_TRY_HARD_TITLE = "setting.barcode.rename.try.hard.title";
+	public static final String SETTING_BARCODE_RENAME_TRY_HARD_TEXT  = "setting.barcode.rename.try.hard.text";
 
 	public static final String URL_ONLINE_HELP = "url.online.help";
 

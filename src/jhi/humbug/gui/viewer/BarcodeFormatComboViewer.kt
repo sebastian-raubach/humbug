@@ -18,6 +18,7 @@
 package jhi.humbug.gui.viewer
 
 import com.google.zxing.BarcodeFormat
+import jhi.humbug.gui.i18n.RB
 import jhi.humbug.util.HumbugParameter
 import jhi.humbug.util.HumbugParameterStore
 import jhi.swtcommons.gui.viewer.AdvancedComboViewer
@@ -41,7 +42,7 @@ class BarcodeFormatComboViewer
  * *
  * @param autoselectFirst Set to `true` if the first item should be selected initially
  */
-private constructor(parent: Composite, style: Int, private val autoselectFirst: Boolean) : AdvancedComboViewer<BarcodeFormat>(parent, style or SWT.READ_ONLY)
+internal constructor(parent: Composite, style: Int, private val autoselectFirst: Boolean, private val includeAll: Boolean = false) : AdvancedComboViewer<BarcodeFormat>(parent, style or SWT.READ_ONLY)
 {
 
     /**
@@ -60,7 +61,12 @@ private constructor(parent: Composite, style: Int, private val autoselectFirst: 
             override fun getText(element: Any?): String
             {
                 if (element is BarcodeFormat)
-                    return element.name
+                {
+                    if (element == BarcodeFormat.RSS_EXPANDED)
+                        return RB.getString(RB.SETTING_BARCODE_RENAME_RESTRICT_TYPE_ACCEPT_ALL)
+                    else
+                        return element.name
+                }
 
                 return super.getText(element)
             }
@@ -71,18 +77,37 @@ private constructor(parent: Composite, style: Int, private val autoselectFirst: 
 
     private fun fill()
     {
-        input = VALID_CODES
+        if (includeAll)
+            input = VALID_CODES_ALL
+        else
+            input = VALID_CODES
 
         if (autoselectFirst)
-            selection = StructuredSelection(VALID_CODES[0])
+        {
+            if (includeAll)
+                selection = StructuredSelection(VALID_CODES_ALL[0])
+            else
+                selection = StructuredSelection(VALID_CODES[0])
+        }
         else
             selection = StructuredSelection(HumbugParameterStore.get(HumbugParameter.barcodeFormat))
     }
 
     override fun getDisplayText(item: BarcodeFormat): String = item.name
 
+    fun getBarcodeRestriction(): BarcodeFormat?
+    {
+        var item = selectedItem
+
+        if (item == BarcodeFormat.RSS_EXPANDED)
+            return null
+        else
+            return item
+    }
+
     companion object
     {
         private val VALID_CODES = arrayOf(BarcodeFormat.CODE_128, BarcodeFormat.CODE_39, BarcodeFormat.EAN_13, BarcodeFormat.EAN_8, BarcodeFormat.UPC_A, BarcodeFormat.QR_CODE)
+        private val VALID_CODES_ALL = arrayOf(BarcodeFormat.RSS_EXPANDED, BarcodeFormat.CODE_128, BarcodeFormat.CODE_39, BarcodeFormat.EAN_13, BarcodeFormat.EAN_8, BarcodeFormat.UPC_A, BarcodeFormat.QR_CODE)
     }
 }
