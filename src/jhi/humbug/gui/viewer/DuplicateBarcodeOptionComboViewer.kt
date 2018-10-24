@@ -65,10 +65,10 @@ class DuplicateBarcodeOptionComboViewer
 
         val option = HumbugParameterStore.get(HumbugParameter.duplicateBarcodeOption)
 
-        if (option == null)
-            selection = StructuredSelection(VALUES[0])
+        selection = if (option == null)
+            StructuredSelection(VALUES[0])
         else
-            selection = StructuredSelection(option)
+            StructuredSelection(option)
     }
 
     override fun getDisplayText(item: BarcodeImageRenameThread.DuplicateBarcodeOption): String = item.text

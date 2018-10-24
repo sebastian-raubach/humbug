@@ -67,10 +67,10 @@ class MissingBarcodeOptionComboViewer
 
         val option = HumbugParameterStore.get(HumbugParameter.missingBarcodeOption)
 
-        if (option == null)
-            selection = StructuredSelection(VALUES[0])
+        selection = if (option == null)
+            StructuredSelection(VALUES[0])
         else
-            selection = StructuredSelection(option)
+            StructuredSelection(option)
     }
 
     override fun getDisplayText(item: BarcodeImageRenameThread.MissingBarcodeOption): String = item.text

@@ -32,13 +32,12 @@ object HumbugParameterStore : ParameterStore()
     {
         val result = super.getAsString(key) ?: return null
 
-        if (key.type == BarcodeFormat::class.java)
-            return (get(key) as BarcodeFormat).name
-        else if (key.type == BarcodeImageRenameThread.MissingBarcodeOption::class.java)
-            return (get(key) as BarcodeImageRenameThread.MissingBarcodeOption).name
-        else if (key.type == BarcodeImageRenameThread.DuplicateBarcodeOption::class.java)
-            return (get(key) as BarcodeImageRenameThread.DuplicateBarcodeOption).name
-        else
-            return result
+        return when
+        {
+            key.type == BarcodeFormat::class.java -> (get(key) as BarcodeFormat).name
+            key.type == BarcodeImageRenameThread.MissingBarcodeOption::class.java -> (get(key) as BarcodeImageRenameThread.MissingBarcodeOption).name
+            key.type == BarcodeImageRenameThread.DuplicateBarcodeOption::class.java -> (get(key) as BarcodeImageRenameThread.DuplicateBarcodeOption).name
+            else -> result
+        }
     }
 }

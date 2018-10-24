@@ -80,10 +80,10 @@ class UpdateIntervalComboViewer(parent: Composite, style: Int) : AdvancedComboVi
         /* Select the first element (or the currently stored one) */
         val toSelect = HumbugParameterStore.get(HumbugParameter.updateInterval)
 
-        if (toSelect != null)
-            prevSelection = toSelect as Install4jUtils.UpdateInterval
+        prevSelection = if (toSelect != null)
+            toSelect as Install4jUtils.UpdateInterval
         else
-            prevSelection = Install4jUtils.UpdateInterval.STARTUP
+            Install4jUtils.UpdateInterval.STARTUP
         selection = StructuredSelection(prevSelection!!)
     }
 

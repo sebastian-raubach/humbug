@@ -111,8 +111,7 @@
 			<fileset dir="installer" includes="**/*.dmg"/>
 		</delete>
 
-		<install4j macKeystorePassword="${keystore.password}" projectfile="installer/humbug.install4j" release="${i4j.version}"
-				   winKeystorePassword="${keystore.password}"/>
+		<install4j macKeystorePassword="${keystore.password}" projectfile="installer/humbug.install4j" release="${i4j.version}"/>
 	</target>
 
 </project>

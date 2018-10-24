@@ -131,13 +131,13 @@ class PageMarginWidget(parent: Composite, style: Int) : Composite(parent, style)
      */
     private fun getMargin(data: Any): Int
     {
-        when (data)
+        return when (data)
         {
-            Margin.Side.BOTTOM -> return Math.round(bottom.selection * (pageWidgetHeight / A4_HEIGHT))
-            Margin.Side.TOP -> return Math.round(top.selection * (pageWidgetHeight / A4_HEIGHT))
-            Margin.Side.LEFT -> return Math.round(left.selection * (pageWidgetWidth / A4_WIDTH))
-            Margin.Side.RIGHT -> return Math.round(right.selection * (pageWidgetWidth / A4_WIDTH))
-            else -> return 0
+            Margin.Side.BOTTOM -> Math.round(bottom.selection * (pageWidgetHeight / A4_HEIGHT))
+            Margin.Side.TOP -> Math.round(top.selection * (pageWidgetHeight / A4_HEIGHT))
+            Margin.Side.LEFT -> Math.round(left.selection * (pageWidgetWidth / A4_WIDTH))
+            Margin.Side.RIGHT -> Math.round(right.selection * (pageWidgetWidth / A4_WIDTH))
+            else -> 0
         }
     }
 
@@ -163,13 +163,13 @@ class PageMarginWidget(parent: Composite, style: Int) : Composite(parent, style)
      */
     fun getMargin(side: Int): Int
     {
-        when (side)
+        return when (side)
         {
-            SWT.LEFT -> return left.selection
-            SWT.TOP -> return top.selection
-            SWT.RIGHT -> return right.selection
-            SWT.BOTTOM -> return bottom.selection
-            else -> return 0
+            SWT.LEFT -> left.selection
+            SWT.TOP -> top.selection
+            SWT.RIGHT -> right.selection
+            SWT.BOTTOM -> bottom.selection
+            else -> 0
         }
 
     }

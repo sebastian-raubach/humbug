@@ -48,7 +48,7 @@ object FileUtils
 
     fun createUniqueFile(parent: File, filename: String, extension: String): File
     {
-        var target = File(parent, filename + "." + extension)
+        var target = File(parent, "$filename.$extension")
         var counter = 1
         while (target.exists())
             target = File(parent, filename + "-" + counter++ + "." + extension)
@@ -72,10 +72,10 @@ object FileUtils
         val builder = StringBuilder()
 
         val br: BufferedReader
-        if (Humbug.WITHIN_JAR)
-            br = BufferedReader(InputStreamReader(FileUtils::class.java.getResourceAsStream("/" + path), "UTF-8"))
+        br = if (Humbug.WITHIN_JAR)
+            BufferedReader(InputStreamReader(FileUtils::class.java.getResourceAsStream("/$path"), "UTF-8"))
         else
-            br = BufferedReader(FileReader(path))
+            BufferedReader(FileReader(path))
 
         br.lines().forEachOrdered { s -> builder.append(s).append("\n") }
 

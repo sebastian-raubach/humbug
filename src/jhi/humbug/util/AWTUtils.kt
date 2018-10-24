@@ -49,9 +49,9 @@ object AWTUtils
 
             val pixelArray = IntArray(3)
 
-            for (y in 0..data.height - 1)
+            for (y in 0 until data.height)
             {
-                for (x in 0..data.width - 1)
+                for (x in 0 until data.width)
                 {
                     raster.getPixel(x, y, pixelArray)
                     val pixel = palette.getPixel(RGB(pixelArray[0], pixelArray[1], pixelArray[2]))
@@ -87,9 +87,9 @@ object AWTUtils
 
             val pixelArray = IntArray(1)
 
-            for (y in 0..data.height - 1)
+            for (y in 0 until data.height)
             {
-                for (x in 0..data.width - 1)
+                for (x in 0 until data.width)
                 {
                     raster.getPixel(x, y, pixelArray)
                     data.setPixel(x, y, pixelArray[0])

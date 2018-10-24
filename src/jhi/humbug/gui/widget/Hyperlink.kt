@@ -60,7 +60,7 @@ class Hyperlink
             if (!StringUtils.isEmpty(link))
             {
                 if (isEmail)
-                    link = "mailto:" + link
+                    link = "mailto:$link"
                 OSUtils.open(link)
             }
         }

@@ -62,10 +62,10 @@ internal constructor(parent: Composite, style: Int, private val autoselectFirst:
             {
                 if (element is BarcodeFormat)
                 {
-                    if (element == BarcodeFormat.RSS_EXPANDED)
-                        return RB.getString(RB.SETTING_BARCODE_RENAME_RESTRICT_TYPE_ACCEPT_ALL)
+                    return if (element == BarcodeFormat.RSS_EXPANDED)
+                        RB.getString(RB.SETTING_BARCODE_RENAME_RESTRICT_TYPE_ACCEPT_ALL)
                     else
-                        return element.name
+                        element.name
                 }
 
                 return super.getText(element)
@@ -77,10 +77,10 @@ internal constructor(parent: Composite, style: Int, private val autoselectFirst:
 
     private fun fill()
     {
-        if (includeAll)
-            input = VALID_CODES_ALL
+        input = if (includeAll)
+            VALID_CODES_ALL
         else
-            input = VALID_CODES
+            VALID_CODES
 
         if (autoselectFirst)
         {
@@ -97,12 +97,12 @@ internal constructor(parent: Composite, style: Int, private val autoselectFirst:
 
     fun getBarcodeRestriction(): BarcodeFormat?
     {
-        var item = selectedItem
+        val item = selectedItem
 
-        if (item == BarcodeFormat.RSS_EXPANDED)
-            return null
+        return if (item == BarcodeFormat.RSS_EXPANDED)
+            null
         else
-            return item
+            item
     }
 
     companion object
