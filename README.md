@@ -1,3 +1,5 @@
+# NO LONGER MAINTAINED. Use [Humbug-Electron](https://github.com/sebastian-raubach/humbug-electron) instead.
+
 # Humbug
 
 Humbug is a multi-platform barcode generator which can be used alongside our [Germinate Scan](http://ics.hutton.ac.uk/germinate-scan/) application to generate sheets of user-defined barcodes to aid in the recording of data in the field or glasshouse. Humbug and [Germinate Scan](http://ics.hutton.ac.uk/germinate-scan/) are primarily suited for the recording of categorical data categories which could include traits such as flowering time.
